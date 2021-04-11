@@ -98,7 +98,6 @@ export class MyMaster extends Construct {
           metadata: {
             labels: {
               app: name,
-              release: name,
             },
             annotations: undefined,
           },
