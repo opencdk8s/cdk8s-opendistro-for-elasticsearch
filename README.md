@@ -6,6 +6,12 @@ Synths manifests for [opendistro-for-elasticsearch](https://github.com/opendistr
 
 This construct is under construction.
 
+## TODO
+
+- Kibana components
+- Configs for Elasticsearch and Kibana
+- Advanced options
+
 ## Contribution
 
 1. Fork ([link](https://github.com/opencdk8s/cdk8s-opendistro-for-elasticsearch/fork))
