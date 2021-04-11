@@ -39,6 +39,7 @@ yarn-error.log*
 !/.eslintrc.json
 !/.github/workflows/build.yml
 !/.github/workflows/release.yml
+!/.mergify.yml
 !/.npmignore
 !/.projen/deps.json
 !/.projen/tasks.json
