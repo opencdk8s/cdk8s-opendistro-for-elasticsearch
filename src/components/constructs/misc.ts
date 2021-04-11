@@ -139,6 +139,44 @@ export class MyMisc extends Construct {
       }],
     });
 
+    new cdk8s.ApiObject(this, 'role-kibana', {
+      apiVersion: 'rbac.authorization.k8s.io/v1beta1',
+      kind: 'Role',
+      metadata: {
+        name: `${name}-kibana`,
+        namespace: this.namespace,
+        labels: {
+          app: name,
+        },
+      },
+      rules: [{
+        apiGroups: ['extensions'],
+        resources: ['podsecuritypolicies'],
+        verbs: ['use'],
+        resourceNames: [`${name}-ps`],
+      }],
+    });
+
+    new cdk8s.ApiObject(this, 'role-binding-kibana', {
+      kind: 'RoleBinding',
+      apiVersion: 'rbac.authorization.k8s.io/v1',
+      metadata: {
+        labels: {
+          app: name,
+        },
+        name: `${name}-kibana-rolebinding`,
+      },
+      roleRef: {
+        kind: 'Role',
+        name: `${name}-kibana`,
+        apiGroup: 'rbac.authorization.k8s.io',
+      },
+      subjects: [{
+        kind: 'ServiceAccount',
+        name: '{name}-kibana',
+        namespace: this.namespace,
+      }],
+    });
 
   }
 }
