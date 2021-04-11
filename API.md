@@ -49,7 +49,6 @@ new MyElasticSearch(scope: Construct, name: string, opts: EsOpts)
   * **kibanaNodeSelectorParams** (<code>Map<string, string></code>)  *No description* __*Optional*__
   * **kibanaReplicas** (<code>number</code>)  *No description* __*Optional*__
   * **kibanaResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
-  * **kibanaVolumeSize** (<code>string</code>)  *No description* __*Optional*__
   * **masterNodeSelectorParams** (<code>Map<string, string></code>)  *No description* __*Optional*__
   * **masterReplicas** (<code>number</code>)  *No description* __*Optional*__
   * **masterResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
@@ -93,7 +92,6 @@ Name | Type | Description
 **kibanaNodeSelectorParams**?🔹 | <code>Map<string, string></code> | __*Optional*__
 **kibanaReplicas**?🔹 | <code>number</code> | __*Optional*__
 **kibanaResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__
-**kibanaVolumeSize**?🔹 | <code>string</code> | __*Optional*__
 **masterNodeSelectorParams**?🔹 | <code>Map<string, string></code> | __*Optional*__
 **masterReplicas**?🔹 | <code>number</code> | __*Optional*__
 **masterResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__

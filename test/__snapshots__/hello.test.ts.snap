@@ -1,0 +1,934 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`elasticsearch 1`] = `
+Array [
+  Object {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "master",
+      },
+      "name": "elasticsearch-discovery",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "clusterIP": "None",
+      "ports": Array [
+        Object {
+          "port": 9300,
+          "protocol": "TCP",
+        },
+      ],
+      "selector": Object {
+        "role": "master",
+      },
+    },
+  },
+  Object {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "master",
+      },
+      "name": "elasticsearch-master",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "replicas": 1,
+      "selector": Object {
+        "matchLabels": Object {
+          "app": "elasticsearch",
+          "role": "master",
+        },
+      },
+      "serviceName": "elasticsearch-discovery",
+      "template": Object {
+        "metadata": Object {
+          "labels": Object {
+            "app": "elasticsearch",
+          },
+        },
+        "spec": Object {
+          "containers": Array [
+            Object {
+              "env": Array [
+                Object {
+                  "name": "cluster.name",
+                  "value": "elasticsearch",
+                },
+                Object {
+                  "name": "cluster.initial_master_nodes",
+                  "value": "elasticsearch-master-0,",
+                },
+                Object {
+                  "name": "node.master",
+                  "value": "true",
+                },
+                Object {
+                  "name": "node.ingest",
+                  "value": "false",
+                },
+                Object {
+                  "name": "node.data",
+                  "value": "false",
+                },
+                Object {
+                  "name": "network.host",
+                  "value": "0.0.0.0",
+                },
+                Object {
+                  "name": "node.name",
+                  "valueFrom": Object {
+                    "fieldRef": Object {
+                      "fieldPath": "metadata.name",
+                    },
+                  },
+                },
+                Object {
+                  "name": "discovery.seed_hosts",
+                  "value": "elasticsearch-discovery",
+                },
+                Object {
+                  "name": "KUBERNETES_NAMESPACE",
+                  "valueFrom": Object {
+                    "fieldRef": Object {
+                      "fieldPath": "metadata.namespace",
+                    },
+                  },
+                },
+                Object {
+                  "name": "PROCESSORS",
+                  "valueFrom": Object {
+                    "resourceFieldRef": Object {
+                      "resource": "limits.cpu",
+                    },
+                  },
+                },
+                Object {
+                  "name": "ES_JAVA_OPTS",
+                  "value": "-Xms512m -Xmx512m",
+                },
+              ],
+              "image": "docker.io/amazon/opendistro-for-elasticsearch:1.13.2",
+              "imagePullPolicy": "Always",
+              "livenessProbe": Object {
+                "initialDelaySeconds": 60,
+                "periodSeconds": 10,
+                "tcpSocket": Object {
+                  "port": "transport",
+                },
+              },
+              "name": "elasticsearch",
+              "ports": Array [
+                Object {
+                  "containerPort": 9300,
+                  "name": "transport",
+                },
+                Object {
+                  "containerPort": 9200,
+                  "name": "http",
+                },
+                Object {
+                  "containerPort": 9600,
+                  "name": "metrics",
+                },
+                Object {
+                  "containerPort": 9650,
+                  "name": "rca",
+                },
+              ],
+              "resources": Object {
+                "limits": Object {
+                  "cpu": "400m",
+                  "memory": "512Mi",
+                },
+                "requests": Object {
+                  "cpu": "200m",
+                  "memory": "256Mi",
+                },
+              },
+              "securityContext": Object {
+                "capabilities": Object {
+                  "add": Array [
+                    "SYS_CHROOT",
+                  ],
+                },
+              },
+              "volumeMounts": Array [
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/data",
+                  "name": "data",
+                },
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/config/logging.yml",
+                  "name": "config",
+                  "subPath": "logging.yml",
+                },
+              ],
+            },
+          ],
+          "initContainers": Array [
+            Object {
+              "command": Array [
+                "sysctl",
+                "-w",
+                "vm.max_map_count=262144",
+              ],
+              "image": "docker.io/busybox:1.27.2",
+              "name": "init-sysctl",
+              "securityContext": Object {
+                "privileged": true,
+              },
+            },
+            Object {
+              "command": Array [
+                "sh",
+                "-c",
+                "chown -R 1000:1000 /usr/share/elasticsearch/data",
+              ],
+              "image": "docker.io/busybox:1.27.2",
+              "name": "fixmount",
+              "volumeMounts": Array [
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/data",
+                  "name": "data",
+                },
+              ],
+            },
+          ],
+          "serviceAccountName": "elasticsearch-es",
+          "volumes": Array [
+            Object {
+              "name": "config",
+              "secret": Object {
+                "secretName": "elasticsearch-es-config",
+              },
+            },
+          ],
+        },
+      },
+      "updateStrategy": Object {
+        "type": "RollingUpdate",
+      },
+      "volumeClaimTemplates": Array [
+        Object {
+          "metadata": Object {
+            "name": "data",
+          },
+          "spec": Object {
+            "accessModes": Array [
+              "ReadWriteOnce",
+            ],
+            "resources": Object {
+              "requests": Object {
+                "storage": "8Gi",
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "client",
+      },
+      "name": "elasticsearch-client-service",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "ports": Array [
+        Object {
+          "name": "http",
+          "port": 9200,
+        },
+        Object {
+          "name": "transport",
+          "port": 9300,
+        },
+        Object {
+          "name": "metrics",
+          "port": 9600,
+        },
+        Object {
+          "name": "rca",
+          "port": 9650,
+        },
+      ],
+      "selector": Object {
+        "role": "client",
+      },
+      "type": "ClusterIP",
+    },
+  },
+  Object {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "client",
+      },
+      "name": "elasticsearch-client",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "replicas": 1,
+      "selector": Object {
+        "matchLabels": Object {
+          "app": "elasticsearch",
+        },
+      },
+      "template": Object {
+        "metadata": Object {
+          "labels": Object {
+            "app": "elasticsearch",
+          },
+        },
+        "spec": Object {
+          "containers": Array [
+            Object {
+              "env": Array [
+                Object {
+                  "name": "cluster.name",
+                  "value": "elasticsearch",
+                },
+                Object {
+                  "name": "node.master",
+                  "value": "false",
+                },
+                Object {
+                  "name": "node.ingest",
+                  "value": "true",
+                },
+                Object {
+                  "name": "node.data",
+                  "value": "false",
+                },
+                Object {
+                  "name": "network.host",
+                  "value": "0.0.0.0",
+                },
+                Object {
+                  "name": "node.name",
+                  "valueFrom": Object {
+                    "fieldRef": Object {
+                      "fieldPath": "metadata.name",
+                    },
+                  },
+                },
+                Object {
+                  "name": "discovery.seed_hosts",
+                  "value": "elasticsearch-discovery",
+                },
+                Object {
+                  "name": "KUBERNETES_NAMESPACE",
+                  "valueFrom": Object {
+                    "fieldRef": Object {
+                      "fieldPath": "metadata.namespace",
+                    },
+                  },
+                },
+                Object {
+                  "name": "PROCESSORS",
+                  "valueFrom": Object {
+                    "resourceFieldRef": Object {
+                      "resource": "limits.cpu",
+                    },
+                  },
+                },
+                Object {
+                  "name": "ES_JAVA_OPTS",
+                  "value": "-Xms512m -Xmx512m",
+                },
+              ],
+              "image": "docker.io/amazon/opendistro-for-elasticsearch:1.13.2",
+              "imagePullPolicy": "Always",
+              "livenessProbe": Object {
+                "initialDelaySeconds": 60,
+                "periodSeconds": 10,
+                "tcpSocket": Object {
+                  "port": "transport",
+                },
+              },
+              "name": "elasticsearch",
+              "ports": Array [
+                Object {
+                  "containerPort": 9200,
+                  "name": "http",
+                },
+                Object {
+                  "containerPort": 9300,
+                  "name": "transport",
+                },
+                Object {
+                  "containerPort": 9600,
+                  "name": "metrics",
+                },
+                Object {
+                  "containerPort": 9650,
+                  "name": "rca",
+                },
+              ],
+              "resources": Object {
+                "limits": Object {
+                  "cpu": "400m",
+                  "memory": "512Mi",
+                },
+                "requests": Object {
+                  "cpu": "200m",
+                  "memory": "256Mi",
+                },
+              },
+              "securityContext": Object {
+                "capabilities": Object {
+                  "add": Array [
+                    "SYS_CHROOT",
+                  ],
+                },
+              },
+              "volumeMounts": Array [
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/config/logging.yml",
+                  "name": "config",
+                  "subPath": "logging.yml",
+                },
+              ],
+            },
+          ],
+          "initContainers": Array [
+            Object {
+              "command": Array [
+                "sysctl",
+                "-w",
+                "vm.max_map_count=262144",
+              ],
+              "image": "docker.io/busybox:1.27.2",
+              "name": "init-sysctl",
+              "securityContext": Object {
+                "privileged": true,
+              },
+            },
+          ],
+          "serviceAccountName": "elasticsearch-es",
+          "volumes": Array [
+            Object {
+              "name": "config",
+              "secret": Object {
+                "secretName": "elasticsearch-es-config",
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "data",
+      },
+      "name": "elasticsearch-data-svc",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "clusterIP": "None",
+      "ports": Array [
+        Object {
+          "name": "transport",
+          "port": 9300,
+        },
+        Object {
+          "name": "http",
+          "port": 9200,
+        },
+        Object {
+          "name": "metrics",
+          "port": 9600,
+        },
+        Object {
+          "name": "rca",
+          "port": 9650,
+        },
+      ],
+      "selector": Object {
+        "role": "data",
+      },
+    },
+  },
+  Object {
+    "apiVersion": "apps/v1",
+    "kind": "StatefulSet",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "data",
+      },
+      "name": "elasticsearch-data",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "replicas": 1,
+      "selector": Object {
+        "matchLabels": Object {
+          "app": "elasticsearch",
+          "role": "data",
+        },
+      },
+      "serviceName": "elasticsearch-data-svc",
+      "template": Object {
+        "metadata": Object {
+          "labels": Object {
+            "app": "elasticsearch",
+            "role": "data",
+          },
+        },
+        "spec": Object {
+          "containers": Array [
+            Object {
+              "env": Array [
+                Object {
+                  "name": "cluster.name",
+                  "value": "elasticsearch",
+                },
+                Object {
+                  "name": "node.master",
+                  "value": "false",
+                },
+                Object {
+                  "name": "node.ingest",
+                  "value": "false",
+                },
+                Object {
+                  "name": "network.host",
+                  "value": "0.0.0.0",
+                },
+                Object {
+                  "name": "node.name",
+                  "valueFrom": Object {
+                    "fieldRef": Object {
+                      "fieldPath": "metadata.name",
+                    },
+                  },
+                },
+                Object {
+                  "name": "discovery.seed_hosts",
+                  "value": "elasticsearch-discovery",
+                },
+                Object {
+                  "name": "KUBERNETES_NAMESPACE",
+                  "valueFrom": Object {
+                    "fieldRef": Object {
+                      "fieldPath": "metadata.namespace",
+                    },
+                  },
+                },
+                Object {
+                  "name": "node.data",
+                  "value": "true",
+                },
+                Object {
+                  "name": "PROCESSORS",
+                  "valueFrom": Object {
+                    "resourceFieldRef": Object {
+                      "resource": "limits.cpu",
+                    },
+                  },
+                },
+                Object {
+                  "name": "ES_JAVA_OPTS",
+                  "value": "-Xms512m -Xmx512m",
+                },
+              ],
+              "image": "docker.io/amazon/opendistro-for-elasticsearch:1.13.2",
+              "imagePullPolicy": "Always",
+              "livenessProbe": Object {
+                "initialDelaySeconds": 60,
+                "periodSeconds": 10,
+                "tcpSocket": Object {
+                  "port": "transport",
+                },
+              },
+              "name": "elasticsearch",
+              "ports": Array [
+                Object {
+                  "containerPort": 9300,
+                  "name": "transport",
+                },
+              ],
+              "resources": Object {
+                "limits": Object {
+                  "cpu": "400m",
+                  "memory": "512Mi",
+                },
+                "requests": Object {
+                  "cpu": "200m",
+                  "memory": "256Mi",
+                },
+              },
+              "securityContext": Object {
+                "capabilities": Object {
+                  "add": Array [
+                    "SYS_CHROOT",
+                  ],
+                },
+              },
+              "volumeMounts": Array [
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/data",
+                  "name": "data",
+                },
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/config/logging.yml",
+                  "name": "config",
+                  "subPath": "logging.yml",
+                },
+              ],
+            },
+          ],
+          "initContainers": Array [
+            Object {
+              "command": Array [
+                "sysctl",
+                "-w",
+                "vm.max_map_count=262144",
+              ],
+              "image": "docker.io/busybox:1.27.2",
+              "name": "init-sysctl",
+              "securityContext": Object {
+                "privileged": true,
+              },
+            },
+            Object {
+              "command": Array [
+                "sh",
+                "-c",
+                "chown -R 1000:1000 /usr/share/elasticsearch/data",
+              ],
+              "image": "docker.io/busybox:1.27.2",
+              "name": "fixmount",
+              "volumeMounts": Array [
+                Object {
+                  "mountPath": "/usr/share/elasticsearch/data",
+                  "name": "data",
+                },
+              ],
+            },
+          ],
+          "serviceAccountName": "elasticsearch-es",
+          "volumes": Array [
+            Object {
+              "name": "config",
+              "secret": Object {
+                "secretName": "elasticsearch-es-config",
+              },
+            },
+          ],
+        },
+      },
+      "updateStrategy": Object {
+        "type": "RollingUpdate",
+      },
+      "volumeClaimTemplates": Array [
+        Object {
+          "metadata": Object {
+            "name": "data",
+          },
+          "spec": Object {
+            "accessModes": Array [
+              "ReadWriteOnce",
+            ],
+            "resources": Object {
+              "requests": Object {
+                "storage": "8Gi",
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "Namespace",
+    "metadata": Object {
+      "labels": Object {
+        "name": "elasticsearch",
+      },
+      "name": "elasticsearch",
+    },
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "ServiceAccount",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-es",
+      "namespace": "elasticsearch",
+    },
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "ServiceAccount",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-kibana",
+      "namespace": "elasticsearch",
+    },
+  },
+  Object {
+    "apiVersion": "policy/v1beta1",
+    "kind": "PodSecurityPolicy",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-psp",
+      "namespace": "elasticsearch",
+    },
+    "spec": Object {
+      "allowedCapabilities": Array [
+        "SYS_CHROOT",
+      ],
+      "fsGroup": Object {
+        "ranges": Array [
+          Object {
+            "max": 65535,
+            "min": 1,
+          },
+        ],
+        "rule": "MustRunAs",
+      },
+      "hostIPC": false,
+      "hostNetwork": false,
+      "hostPID": false,
+      "privileged": true,
+      "readOnlyRootFilesystem": false,
+      "runAsUser": Object {
+        "rule": "RunAsAny",
+      },
+      "seLinux": Object {
+        "rule": "RunAsAny",
+      },
+      "supplementalGroups": Object {
+        "ranges": Array [
+          Object {
+            "max": 65535,
+            "min": 1,
+          },
+        ],
+        "rule": "MustRunAs",
+      },
+      "volumes": Array [
+        "configMap",
+        "emptyDir",
+        "projected",
+        "secret",
+        "downwardAPI",
+        "persistentVolumeClaim",
+      ],
+    },
+  },
+  Object {
+    "apiVersion": "rbac.authorization.k8s.io/v1beta1",
+    "kind": "Role",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-es",
+      "namespace": "elasticsearch",
+    },
+    "rules": Array [
+      Object {
+        "apiGroups": Array [
+          "extensions",
+        ],
+        "resourceNames": Array [
+          "elasticsearch-ps",
+        ],
+        "resources": Array [
+          "podsecuritypolicies",
+        ],
+        "verbs": Array [
+          "use",
+        ],
+      },
+    ],
+  },
+  Object {
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "RoleBinding",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-elastic-rolebinding",
+    },
+    "roleRef": Object {
+      "apiGroup": "rbac.authorization.k8s.io",
+      "kind": "Role",
+      "name": "elasticsearch-es",
+    },
+    "subjects": Array [
+      Object {
+        "kind": "ServiceAccount",
+        "name": "elasticsearch-es",
+        "namespace": "elasticsearch",
+      },
+    ],
+  },
+  Object {
+    "apiVersion": "rbac.authorization.k8s.io/v1beta1",
+    "kind": "Role",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-kibana",
+      "namespace": "elasticsearch",
+    },
+    "rules": Array [
+      Object {
+        "apiGroups": Array [
+          "extensions",
+        ],
+        "resourceNames": Array [
+          "elasticsearch-ps",
+        ],
+        "resources": Array [
+          "podsecuritypolicies",
+        ],
+        "verbs": Array [
+          "use",
+        ],
+      },
+    ],
+  },
+  Object {
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "RoleBinding",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-kibana-rolebinding",
+    },
+    "roleRef": Object {
+      "apiGroup": "rbac.authorization.k8s.io",
+      "kind": "Role",
+      "name": "elasticsearch-kibana",
+    },
+    "subjects": Array [
+      Object {
+        "kind": "ServiceAccount",
+        "name": "elasticsearch-kibana",
+        "namespace": "elasticsearch",
+      },
+    ],
+  },
+  Object {
+    "apiVersion": "v1",
+    "kind": "Service",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "kibana",
+      },
+      "name": "elasticsearch-kibana-svc",
+    },
+    "spec": Object {
+      "ports": Array [
+        Object {
+          "name": "kibana-svc",
+          "port": 443,
+          "targetPort": 5601,
+        },
+      ],
+      "selector": Object {
+        "role": "kibana",
+      },
+      "type": "ClusterIP",
+    },
+  },
+  Object {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+        "role": "kibana",
+      },
+      "name": "elasticsearch",
+    },
+    "spec": Object {
+      "replicas": 1,
+      "selector": Object {
+        "matchLabels": Object {
+          "app": "elasticsearch",
+          "role": "kibana",
+        },
+      },
+      "spec": Object {
+        "containers": Array [
+          Object {
+            "env": Array [
+              Object {
+                "name": "CLUSTER_NAME",
+                "value": "elasticsearch",
+              },
+              Object {
+                "name": "ELASTICSEARCH_HOSTS",
+                "value": "elasticsearch-client-service:9200",
+              },
+            ],
+            "image": "docker.io/amazon/opendistro-for-elasticsearch-kibana:1.13.2",
+            "imagePullPolicy": "Always",
+            "name": "elasticsearch-kibana",
+            "ports": Array [
+              Object {
+                "containerPort": 5601,
+              },
+            ],
+            "resources": Object {
+              "limits": Object {
+                "cpu": "400m",
+                "memory": "512Mi",
+              },
+              "requests": Object {
+                "cpu": "200m",
+                "memory": "256Mi",
+              },
+            },
+          },
+        ],
+        "restartPolicy": "Always",
+        "serviceAccountName": "elasticsearch-kibana",
+      },
+      "template": Object {
+        "metadata": Object {
+          "labels": Object {
+            "app": "elasticsearch",
+            "role": "kibana",
+          },
+        },
+      },
+    },
+  },
+]
+`;
