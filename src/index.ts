@@ -12,6 +12,7 @@ export interface EsOpts {
   readonly name?: string;
   readonly namespace?: string;
   readonly image?: string;
+  readonly createElasticsearchSecret?: boolean;
   // Master
   readonly masterVolumeSize?: string;
   readonly masterReplicas?: number;
@@ -45,6 +46,7 @@ export class MyElasticSearch extends Construct {
   public readonly name?: string;
   public readonly namespace?: string;
   public readonly image?: string;
+  public readonly createElasticsearchSecret?: boolean;
 
   constructor(scope: Construct, name: string, opts: EsOpts) {
     super(scope, name);
@@ -53,6 +55,7 @@ export class MyElasticSearch extends Construct {
     this.namespace = opts.namespace ?? 'elasticsearch';
     this.image = opts.image ?? 'docker.io/amazon/opendistro-for-elasticsearch:1.13.2';
     this.kibanaImage = opts.kibanaImage ?? 'docker.io/amazon/opendistro-for-elasticsearch-kibana:1.13.2';
+    this.createElasticsearchSecret = opts.createElasticsearchSecret ?? true;
 
     new MyMaster(this, `${this.name}-master`, {
       masterReplicas: opts.masterReplicas,
@@ -87,6 +90,7 @@ export class MyElasticSearch extends Construct {
     new MyMisc(this, `${this.name}`, {
       namespace: this.namespace,
       name: this.name,
+      createElasticsearchSecret: this.createElasticsearchSecret,
     });
 
     new MyKibana(this, `${this.name}-kibana`, {
