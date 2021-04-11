@@ -1,10 +1,11 @@
 
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
-import { ResourceRequirements, convertQuantity } from '../../util';
+import { ResourceRequirements, convertQuantity } from '../util';
 
 export interface ClientOpts {
 
+  readonly name?: string;
   readonly namespace?: string;
   readonly image?: string;
   readonly clientVolumeSize?: string;
@@ -21,6 +22,7 @@ export class MyClient extends Construct {
      * @default - elasticsearch
      */
 
+  public readonly name?: string;
   public readonly namespace?: string;
   public readonly image?: string;
   public readonly clientVolumeSize?: string;
@@ -31,6 +33,7 @@ export class MyClient extends Construct {
   constructor(scope: Construct, name: string, opts: ClientOpts) {
     super(scope, name);
 
+    this.name = opts.name ?? 'elasticsearch';
     this.clientReplicas = opts.clientReplicas ?? 1;
     this.clientNodeSelectorParams = opts.clientNodeSelectorParams ?? undefined;
     this.namespace = opts.namespace ?? 'elasticsearch';
@@ -52,10 +55,10 @@ export class MyClient extends Construct {
       apiVersion: 'v1',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
           role: 'client',
         },
-        name: `${name}-client-service`,
+        name: `${this.name}-client-service`,
         namespace: this.namespace,
       },
       spec: {
@@ -89,28 +92,28 @@ export class MyClient extends Construct {
       kind: 'Deployment',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
           role: 'client',
         },
-        name: `${name}-client`,
+        name: `${this.name}-client`,
         namespace: this.namespace,
       },
       spec: {
         replicas: 1,
         selector: {
           matchLabels: {
-            app: name,
+            app: this.name,
           },
         },
         template: {
           metadata: {
             labels: {
-              app: name,
+              app: this.name,
             },
             annotations: undefined,
           },
           spec: {
-            serviceAccountName: `${name}-es`,
+            serviceAccountName: `${this.name}-es`,
             initContainers: [{
               name: 'init-sysctl',
               image: 'docker.io/busybox:1.27.2',
@@ -161,7 +164,7 @@ export class MyClient extends Construct {
                 },
                 {
                   name: 'discovery.seed_hosts',
-                  value: `${name}-discovery`,
+                  value: `${this.name}-discovery`,
                 },
                 {
                   name: 'KUBERNETES_NAMESPACE',
@@ -222,7 +225,7 @@ export class MyClient extends Construct {
             volumes: [{
               name: 'config',
               secret: {
-                secretName: `${name}-es-config`,
+                secretName: `${this.name}-es-config`,
               },
             }],
           },

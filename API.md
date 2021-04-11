@@ -45,10 +45,16 @@ new MyElasticSearch(scope: Construct, name: string, opts: EsOpts)
   * **dataResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
   * **dataVolumeSize** (<code>string</code>)  *No description* __*Optional*__
   * **image** (<code>string</code>)  *No description* __*Optional*__
+  * **kibanaImage** (<code>string</code>)  *No description* __*Optional*__
+  * **kibanaNodeSelectorParams** (<code>Map<string, string></code>)  *No description* __*Optional*__
+  * **kibanaReplicas** (<code>number</code>)  *No description* __*Optional*__
+  * **kibanaResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
+  * **kibanaVolumeSize** (<code>string</code>)  *No description* __*Optional*__
   * **masterNodeSelectorParams** (<code>Map<string, string></code>)  *No description* __*Optional*__
   * **masterReplicas** (<code>number</code>)  *No description* __*Optional*__
   * **masterResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
   * **masterVolumeSize** (<code>string</code>)  *No description* __*Optional*__
+  * **name** (<code>string</code>)  *No description* __*Optional*__
   * **namespace** (<code>string</code>)  *No description* __*Optional*__
 
 
@@ -59,7 +65,9 @@ new MyElasticSearch(scope: Construct, name: string, opts: EsOpts)
 Name | Type | Description 
 -----|------|-------------
 **image**?🔹 | <code>string</code> | __*Optional*__
-**namespace**?🔹 | <code>string</code> | Namespace.<br/>__*Default*__: elasticsearch
+**kibanaImage**?🔹 | <code>string</code> | Namespace.<br/>__*Default*__: elasticsearch
+**name**?🔹 | <code>string</code> | __*Optional*__
+**namespace**?🔹 | <code>string</code> | __*Optional*__
 
 
 
@@ -81,10 +89,16 @@ Name | Type | Description
 **dataResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__
 **dataVolumeSize**?🔹 | <code>string</code> | __*Optional*__
 **image**?🔹 | <code>string</code> | __*Optional*__
+**kibanaImage**?🔹 | <code>string</code> | __*Optional*__
+**kibanaNodeSelectorParams**?🔹 | <code>Map<string, string></code> | __*Optional*__
+**kibanaReplicas**?🔹 | <code>number</code> | __*Optional*__
+**kibanaResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__
+**kibanaVolumeSize**?🔹 | <code>string</code> | __*Optional*__
 **masterNodeSelectorParams**?🔹 | <code>Map<string, string></code> | __*Optional*__
 **masterReplicas**?🔹 | <code>number</code> | __*Optional*__
 **masterResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__
 **masterVolumeSize**?🔹 | <code>string</code> | __*Optional*__
+**name**?🔹 | <code>string</code> | __*Optional*__
 **namespace**?🔹 | <code>string</code> | __*Optional*__
 
 
