@@ -86,6 +86,7 @@ export class MyElasticSearch extends Construct {
 
     new MyMisc(this, `${this.name}`, {
       namespace: this.namespace,
+      name: this.name,
     });
 
     new MyKibana(this, `${this.name}-kibana`, {
