@@ -1,114 +1,111 @@
 import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
-import { ResourceRequirements, convertQuantity } from '../../util';
+import { ResourceRequirements, convertQuantity } from '../util';
 
-export interface DataOpts {
+export interface MasterOpts {
 
+  readonly name?: string;
   readonly namespace?: string;
   readonly image?: string;
-  readonly dataVolumeSize?: string;
-  readonly dataResources?: ResourceRequirements;
-  readonly dataReplicas?: number;
-  readonly dataNodeSelectorParams?: { [name: string]: string };
+  readonly masterReplicas?: number;
+  readonly masterVolumeSize?: string;
+  readonly masterResources?: ResourceRequirements;
+  readonly masterNodeSelectorParams?: { [name: string]: string };
 }
 
-export class MyData extends Construct {
+export class MyMaster extends Construct {
 
+  /**
+   * Namespace
+   *
+   * @default - elasticsearch
+   */
+
+  public readonly name?: string;
   public readonly namespace?: string;
   public readonly image?: string;
-  public readonly dataVolumeSize?: string;
-  public readonly dataNodeSelectorParams?: { [name: string]: string };
-  public readonly dataResources?: ResourceRequirements;
-  public readonly dataReplicas?: number;
+  public readonly masterResources?: ResourceRequirements;
+  public readonly masterVolumeSize?: string;
+  public readonly masterNodeSelectorParams?: { [name: string]: string };
+  public readonly masterReplicas?: number;
 
-  constructor(scope: Construct, name: string, opts: DataOpts) {
+  constructor(scope: Construct, name: string, opts: MasterOpts) {
     super(scope, name);
 
-    this.dataNodeSelectorParams = opts.dataNodeSelectorParams ?? undefined;
-    this.dataReplicas = opts.dataReplicas ?? 1;
+    this.masterNodeSelectorParams = opts.masterNodeSelectorParams ?? undefined;
+
+
+    this.name = opts.name ?? 'elasticsearch';
     this.namespace = opts.namespace ?? 'elasticsearch';
-    this.dataVolumeSize = opts.dataVolumeSize ?? '8Gi';
+    this.masterVolumeSize = opts.masterVolumeSize ?? '8Gi';
+    this.masterReplicas = opts.masterReplicas ?? 1;
     this.image = opts.image ?? 'docker.io/amazon/opendistro-for-elasticsearch:1.13.2';
-    this.dataResources = {
-      limits: convertQuantity(opts.dataResources?.limits, {
+    this.masterResources = {
+      limits: convertQuantity(opts.masterResources?.limits, {
         cpu: '400m',
         memory: '512Mi',
       }),
-      requests: convertQuantity(opts.dataResources?.requests, {
+      requests: convertQuantity(opts.masterResources?.requests, {
         cpu: '200m',
         memory: '256Mi',
       }),
     };
 
-    new cdk8s.ApiObject(this, 'data-svc', {
+    new cdk8s.ApiObject(this, 'master-svc', {
       apiVersion: 'v1',
       kind: 'Service',
       metadata: {
         labels: {
-          app: name,
-          role: 'data',
+          app: this.name,
+          role: 'master',
         },
-        name: `${name}-data-svc`,
+        name: `${this.name}-discovery`,
         namespace: this.namespace,
       },
       spec: {
-        ports: [
-          {
-            port: 9300,
-            name: 'transport',
-          },
-          {
-            port: 9200,
-            name: 'http',
-          },
-          {
-            port: 9600,
-            name: 'metrics',
-          },
-          {
-            port: 9650,
-            name: 'rca',
-          },
-        ],
+        ports: [{
+          port: 9300,
+          protocol: 'TCP',
+        }],
         clusterIP: 'None',
         selector: {
-          role: 'data',
+          role: 'master',
         },
       },
     });
 
-    new cdk8s.ApiObject(this, 'data-sts', {
+    new cdk8s.ApiObject(this, 'master-sts', {
       apiVersion: 'apps/v1',
       kind: 'StatefulSet',
       metadata: {
         labels: {
-          app: name,
-          role: 'data',
+          app: this.name,
+          role: 'master',
         },
-        name: `${name}-data`,
+        name: `${this.name}-master`,
         namespace: this.namespace,
       },
       spec: {
-        serviceName: `${name}-data-svc`,
-        replicas: 1,
+        replicas: this.masterReplicas,
         selector: {
           matchLabels: {
-            app: name,
-            role: 'data',
+            app: this.name,
+            role: 'master',
           },
         },
         updateStrategy: {
           type: 'RollingUpdate',
         },
+        serviceName: `${this.name}-discovery`,
         template: {
           metadata: {
             labels: {
-              app: name,
-              role: 'data',
+              app: this.name,
             },
             annotations: undefined,
           },
           spec: {
+            serviceAccountName: `${this.name}-es`,
             initContainers: [
               {
                 name: 'init-sysctl',
@@ -137,7 +134,6 @@ export class MyData extends Construct {
                 }],
               },
             ],
-            serviceAccountName: `${name}-es`,
             containers: [{
               name: 'elasticsearch',
               securityContext: {
@@ -151,11 +147,19 @@ export class MyData extends Construct {
                   value: 'elasticsearch',
                 },
                 {
+                  name: 'cluster.initial_master_nodes',
+                  value: `${this.name}-master-0,`,
+                },
+                {
                   name: 'node.master',
-                  value: 'false',
+                  value: 'true',
                 },
                 {
                   name: 'node.ingest',
+                  value: 'false',
+                },
+                {
+                  name: 'node.data',
                   value: 'false',
                 },
                 {
@@ -172,7 +176,7 @@ export class MyData extends Construct {
                 },
                 {
                   name: 'discovery.seed_hosts',
-                  value: `${name}-discovery`,
+                  value: `${this.name}-discovery`,
                 },
                 {
                   name: 'KUBERNETES_NAMESPACE',
@@ -181,10 +185,6 @@ export class MyData extends Construct {
                       fieldPath: 'metadata.namespace',
                     },
                   },
-                },
-                {
-                  name: 'node.data',
-                  value: 'true',
                 },
                 {
                   name: 'PROCESSORS',
@@ -199,13 +199,7 @@ export class MyData extends Construct {
                   value: '-Xms512m -Xmx512m',
                 },
               ],
-              image: this.image,
-              imagePullPolicy: 'Always',
-              ports: [{
-                containerPort: 9300,
-                name: 'transport',
-              }],
-              resources: this.dataResources,
+              resources: this.masterResources,
               livenessProbe: {
                 initialDelaySeconds: 60,
                 periodSeconds: 10,
@@ -213,6 +207,26 @@ export class MyData extends Construct {
                   port: 'transport',
                 },
               },
+              image: this.image,
+              imagePullPolicy: 'Always',
+              ports: [
+                {
+                  containerPort: 9300,
+                  name: 'transport',
+                },
+                {
+                  containerPort: 9200,
+                  name: 'http',
+                },
+                {
+                  containerPort: 9600,
+                  name: 'metrics',
+                },
+                {
+                  containerPort: 9650,
+                  name: 'rca',
+                },
+              ],
               volumeMounts: [
                 {
                   mountPath: '/usr/share/elasticsearch/data',
@@ -226,11 +240,11 @@ export class MyData extends Construct {
                 },
               ],
             }],
-            nodeSelector: this.dataNodeSelectorParams,
+            nodeSelector: this.masterNodeSelectorParams,
             volumes: [{
               name: 'config',
               secret: {
-                secretName: `${name}-es-config`,
+                secretName: `${this.name}-es-config`,
               },
             }],
           },
@@ -244,14 +258,12 @@ export class MyData extends Construct {
             accessModes: ['ReadWriteOnce'],
             resources: {
               requests: {
-                storage: this.dataVolumeSize,
+                storage: this.masterVolumeSize,
               },
             },
           },
         }],
       },
     });
-
   }
-
 }

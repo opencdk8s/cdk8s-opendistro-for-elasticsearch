@@ -3,15 +3,19 @@ import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 
 export interface MiscOpts {
+  readonly name?: string;
   readonly namespace?: string;
 }
 export class MyMisc extends Construct {
 
+
+  public readonly name?: string;
   public readonly namespace?: string;
 
   constructor(scope: Construct, name: string, opts: MiscOpts) {
     super(scope, name);
 
+    this.name = opts.name ?? 'elasticsearch';
     this.namespace = opts.namespace ?? 'elasticsearch';
 
     // Namespace
@@ -21,7 +25,7 @@ export class MyMisc extends Construct {
       metadata: {
         name: this.namespace,
         labels: {
-          name: name,
+          name: this.name,
         },
       },
     });
@@ -32,9 +36,9 @@ export class MyMisc extends Construct {
       kind: 'ServiceAccount',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
         },
-        name: `${name}-es`,
+        name: `${this.name}-es`,
         namespace: this.namespace,
       },
     });
@@ -44,9 +48,9 @@ export class MyMisc extends Construct {
       kind: 'ServiceAccount',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
         },
-        name: `${name}-kibana`,
+        name: `${this.name}-kibana`,
         namespace: this.namespace,
       },
     });
@@ -57,9 +61,9 @@ export class MyMisc extends Construct {
       kind: 'PodSecurityPolicy',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
         },
-        name: `${name}-psp`,
+        name: `${this.name}-psp`,
         namespace: this.namespace,
       },
       spec: {
@@ -104,17 +108,17 @@ export class MyMisc extends Construct {
       apiVersion: 'rbac.authorization.k8s.io/v1beta1',
       kind: 'Role',
       metadata: {
-        name: `${name}-es`,
+        name: `${this.name}-es`,
         namespace: this.namespace,
         labels: {
-          app: name,
+          app: this.name,
         },
       },
       rules: [{
         apiGroups: ['extensions'],
         resources: ['podsecuritypolicies'],
         verbs: ['use'],
-        resourceNames: [`${name}-ps`],
+        resourceNames: [`${this.name}-ps`],
       }],
     });
 
@@ -123,18 +127,18 @@ export class MyMisc extends Construct {
       apiVersion: 'rbac.authorization.k8s.io/v1',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
         },
-        name: `${name}-elastic-rolebinding`,
+        name: `${this.name}-elastic-rolebinding`,
       },
       roleRef: {
         kind: 'Role',
-        name: `${name}-es`,
+        name: `${this.name}-es`,
         apiGroup: 'rbac.authorization.k8s.io',
       },
       subjects: [{
         kind: 'ServiceAccount',
-        name: `${name}-es`,
+        name: `${this.name}-es`,
         namespace: this.namespace,
       }],
     });
@@ -143,17 +147,17 @@ export class MyMisc extends Construct {
       apiVersion: 'rbac.authorization.k8s.io/v1beta1',
       kind: 'Role',
       metadata: {
-        name: `${name}-kibana`,
+        name: `${this.name}-kibana`,
         namespace: this.namespace,
         labels: {
-          app: name,
+          app: this.name,
         },
       },
       rules: [{
         apiGroups: ['extensions'],
         resources: ['podsecuritypolicies'],
         verbs: ['use'],
-        resourceNames: [`${name}-ps`],
+        resourceNames: [`${this.name}-ps`],
       }],
     });
 
@@ -162,18 +166,18 @@ export class MyMisc extends Construct {
       apiVersion: 'rbac.authorization.k8s.io/v1',
       metadata: {
         labels: {
-          app: name,
+          app: this.name,
         },
-        name: `${name}-kibana-rolebinding`,
+        name: `${this.name}-kibana-rolebinding`,
       },
       roleRef: {
         kind: 'Role',
-        name: `${name}-kibana`,
+        name: `${this.name}-kibana`,
         apiGroup: 'rbac.authorization.k8s.io',
       },
       subjects: [{
         kind: 'ServiceAccount',
-        name: '{name}-kibana',
+        name: `${this.name}-kibana`,
         namespace: this.namespace,
       }],
     });
