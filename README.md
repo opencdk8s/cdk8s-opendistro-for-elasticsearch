@@ -8,9 +8,9 @@ This construct is under construction.
 
 ## TODO
 
-- Kibana components
 - Configs for Elasticsearch and Kibana
 - Advanced options
+
 
 ## Contribution
 

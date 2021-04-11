@@ -8,7 +8,6 @@ export interface KibanaOpts {
   readonly namespace?: string;
   readonly kibanaImage?: string;
   readonly kibanaReplicas?: number;
-  readonly kibanaVolumeSize?: string;
   readonly kibanaResources?: ResourceRequirements;
   readonly kibanaNodeSelectorParams?: { [name: string]: string };
 }
@@ -25,7 +24,6 @@ export class MyKibana extends Construct {
   public readonly namespace?: string;
   public readonly kibanaImage?: string;
   public readonly kibanaResources?: ResourceRequirements;
-  public readonly kibanaVolumeSize?: string;
   public readonly kibanaNodeSelectorParams?: { [name: string]: string };
   public readonly kibanaReplicas?: number;
 
@@ -35,7 +33,6 @@ export class MyKibana extends Construct {
     this.name = opts.name ?? 'elasticsearch';
     this.kibanaNodeSelectorParams = opts.kibanaNodeSelectorParams ?? undefined;
     this.namespace = opts.namespace ?? 'elasticsearch';
-    this.kibanaVolumeSize = opts.kibanaVolumeSize ?? '8Gi';
     this.kibanaReplicas = opts.kibanaReplicas ?? 1;
     this.kibanaImage = opts.kibanaImage ?? 'docker.io/amazon/opendistro-for-elasticsearch-kibana:1.13.2';
     this.kibanaResources = {
@@ -119,6 +116,7 @@ export class MyKibana extends Construct {
               containerPort: 5601,
             }],
           }],
+          nodeSelectors: this.kibanaNodeSelectorParams,
           serviceAccountName: `${this.name}-kibana`,
           restartPolicy: 'Always',
         },

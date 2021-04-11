@@ -30,7 +30,6 @@ export interface EsOpts {
   // Kibana
   readonly kibanaImage?: string;
   readonly kibanaResources?: ResourceRequirements;
-  readonly kibanaVolumeSize?: string;
   readonly kibanaNodeSelectorParams?: { [name: string]: string };
   readonly kibanaReplicas?: number;
 }
@@ -91,7 +90,6 @@ export class MyElasticSearch extends Construct {
 
     new MyKibana(this, `${this.name}-kibana`, {
       kibanaReplicas: opts.kibanaReplicas,
-      kibanaVolumeSize: opts.kibanaVolumeSize,
       kibanaImage: opts.kibanaImage,
       kibanaNodeSelectorParams: opts.kibanaNodeSelectorParams,
       kibanaResources: opts.kibanaResources,
