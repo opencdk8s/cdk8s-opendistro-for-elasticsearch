@@ -40,6 +40,7 @@ new MyElasticSearch(scope: Construct, name: string, opts: EsOpts)
   * **clientReplicas** (<code>number</code>)  *No description* __*Optional*__
   * **clientResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
   * **clientVolumeSize** (<code>string</code>)  *No description* __*Optional*__
+  * **createElasticsearchSecret** (<code>boolean</code>)  *No description* __*Optional*__
   * **dataNodeSelectorParams** (<code>Map<string, string></code>)  *No description* __*Optional*__
   * **dataReplicas** (<code>number</code>)  *No description* __*Optional*__
   * **dataResources** (<code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code>)  *No description* __*Optional*__
@@ -63,6 +64,7 @@ new MyElasticSearch(scope: Construct, name: string, opts: EsOpts)
 
 Name | Type | Description 
 -----|------|-------------
+**createElasticsearchSecret**?🔹 | <code>boolean</code> | __*Optional*__
 **image**?🔹 | <code>string</code> | __*Optional*__
 **kibanaImage**?🔹 | <code>string</code> | Namespace.<br/>__*Default*__: elasticsearch
 **name**?🔹 | <code>string</code> | __*Optional*__
@@ -83,6 +85,7 @@ Name | Type | Description
 **clientReplicas**?🔹 | <code>number</code> | __*Optional*__
 **clientResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__
 **clientVolumeSize**?🔹 | <code>string</code> | __*Optional*__
+**createElasticsearchSecret**?🔹 | <code>boolean</code> | __*Optional*__
 **dataNodeSelectorParams**?🔹 | <code>Map<string, string></code> | __*Optional*__
 **dataReplicas**?🔹 | <code>number</code> | __*Optional*__
 **dataResources**?🔹 | <code>[ResourceRequirements](#opencdk8s-cdk8s-opendistro-for-elasticsearch-resourcerequirements)</code> | __*Optional*__
