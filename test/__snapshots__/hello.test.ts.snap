@@ -682,6 +682,21 @@ Array [
   },
   Object {
     "apiVersion": "v1",
+    "data": Object {
+      "logging.yml": "YXBwZW5kZXI6CiAgY29uc29sZToKICAgIGxheW91dDoKICAgICAgY29udmVyc2lvblBhdHRlcm46ICdbJWR7SVNPODYwMX1dWyUtNXBdWyUtMjVjXSAlbSVuJwogICAgICB0eXBlOiBjb25zb2xlUGF0dGVybgogICAgdHlwZTogY29uc29sZQplcy5sb2dnZXIubGV2ZWw6IElORk8KbG9nZ2VyOgogIGFjdGlvbjogREVCVUcKICBjb20uYW1hem9uYXdzOiBXQVJOCnJvb3RMb2dnZXI6ICR7ZXMubG9nZ2VyLmxldmVsfSwgY29uc29sZQ==",
+    },
+    "kind": "Secret",
+    "metadata": Object {
+      "labels": Object {
+        "app": "elasticsearch",
+      },
+      "name": "elasticsearch-es-config",
+      "namespace": "elasticsearch",
+    },
+    "type": "Opaque",
+  },
+  Object {
+    "apiVersion": "v1",
     "kind": "ServiceAccount",
     "metadata": Object {
       "labels": Object {

@@ -23,9 +23,9 @@ export class MyMisc extends Construct {
 
     this.name = opts.name ?? 'elasticsearch';
     this.namespace = opts.namespace ?? 'elasticsearch';
-    this.elasticsearchConfig = opts.elasticsearchConfig ?? undefined
-    this.elasticsearchLoggingConfig = opts.elasticsearchLoggingConfig ?? 'YXBwZW5kZXI6CiAgY29uc29sZToKICAgIGxheW91dDoKICAgICAgY29udmVyc2lvblBhdHRlcm46ICdbJWR7SVNPODYwMX1dWyUtNXBdWyUtMjVjXSAlbSVuJwogICAgICB0eXBlOiBjb25zb2xlUGF0dGVybgogICAgdHlwZTogY29uc29sZQplcy5sb2dnZXIubGV2ZWw6IElORk8KbG9nZ2VyOgogIGFjdGlvbjogREVCVUcKICBjb20uYW1hem9uYXdzOiBXQVJOCnJvb3RMb2dnZXI6ICR7ZXMubG9nZ2VyLmxldmVsfSwgY29uc29sZQ=='
-    this.createElasticsearchSecret = opts.createElasticsearchSecret ?? true
+    this.elasticsearchConfig = opts.elasticsearchConfig ?? undefined;
+    this.elasticsearchLoggingConfig = opts.elasticsearchLoggingConfig ?? 'YXBwZW5kZXI6CiAgY29uc29sZToKICAgIGxheW91dDoKICAgICAgY29udmVyc2lvblBhdHRlcm46ICdbJWR7SVNPODYwMX1dWyUtNXBdWyUtMjVjXSAlbSVuJwogICAgICB0eXBlOiBjb25zb2xlUGF0dGVybgogICAgdHlwZTogY29uc29sZQplcy5sb2dnZXIubGV2ZWw6IElORk8KbG9nZ2VyOgogIGFjdGlvbjogREVCVUcKICBjb20uYW1hem9uYXdzOiBXQVJOCnJvb3RMb2dnZXI6ICR7ZXMubG9nZ2VyLmxldmVsfSwgY29uc29sZQ==';
+    this.createElasticsearchSecret = opts.createElasticsearchSecret ?? true;
 
     // Namespace
     new cdk8s.ApiObject(this, 'namespace', {
@@ -52,21 +52,21 @@ export class MyMisc extends Construct {
       },
     });
 
-    if(this.createElasticsearchSecret === true) {
+    if (this.createElasticsearchSecret === true) {
       new cdk8s.ApiObject(this, 'es-config', {
-        apiVersion: "v1",
-        kind: "Secret",
+        apiVersion: 'v1',
+        kind: 'Secret',
         metadata: {
-            name: `${this.name}-es-config`,
-            namespace: this.namespace,
-            labels: {
-                app: this.name,
-            },
+          name: `${this.name}-es-config`,
+          namespace: this.namespace,
+          labels: {
+            app: this.name,
+          },
         },
-        type: "Opaque",
+        type: 'Opaque',
         data: {
-            "elasticsearch.yml": this.elasticsearchConfig,
-            "logging.yml": this.elasticsearchLoggingConfig,
+          'elasticsearch.yml': this.elasticsearchConfig,
+          'logging.yml': this.elasticsearchLoggingConfig,
         },
       });
     }
